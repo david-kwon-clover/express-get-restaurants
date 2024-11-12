@@ -55,6 +55,16 @@ app.put("/restaurants/:id", async (req, res, next) => {
     }
 })
 
+app.delete("/restaurants/:id", async (req, res, next) => {
+    try {
+        await Restaurant.destroy({ where: { id: req.params.id } });
+        res.status(200);
+        res.send(`Successfully deleted entry with id:${req.params.id}`);
+    } catch(error) {
+        next(error);
+    }
+})
+
 
 
 module.exports = app;
