@@ -4,7 +4,7 @@ const db = require("../db/connection");
 
 const restaurantsRouter = express.Router();
 
-restaurantsRouter.get("/restaurants", async (req, res, next) => {
+restaurantsRouter.get("/", async (req, res, next) => {
     try {
         const restaurants = await Restaurant.findAll();
         if(!restaurants) {
@@ -16,7 +16,7 @@ restaurantsRouter.get("/restaurants", async (req, res, next) => {
     }
 })
 
-restaurantsRouter.get("/restaurants/:id", async (req, res, next) => {
+restaurantsRouter.get("/:id", async (req, res, next) => {
     try {
         const restaurant = await Restaurant.findByPk(req.params.id);
         if(!restaurant) {
@@ -28,7 +28,7 @@ restaurantsRouter.get("/restaurants/:id", async (req, res, next) => {
     }
 })
 
-restaurantsRouter.post("/restaurants", async (req, res, next) => {
+restaurantsRouter.post("/", async (req, res, next) => {
     try {
         await Restaurant.create(req.body);
         res.status(201);
@@ -40,7 +40,7 @@ restaurantsRouter.post("/restaurants", async (req, res, next) => {
     }
 })
 
-restaurantsRouter.put("/restaurants/:id", async (req, res, next) => {
+restaurantsRouter.put("/:id", async (req, res, next) => {
     try {
         await Restaurant.update(req.body, { where: { id: req.params.id } });
         res.status(201);
@@ -52,7 +52,7 @@ restaurantsRouter.put("/restaurants/:id", async (req, res, next) => {
     }
 })
 
-restaurantsRouter.delete("/restaurants/:id", async (req, res, next) => {
+restaurantsRouter.delete("/:id", async (req, res, next) => {
     try {
         await Restaurant.destroy({ where: { id: req.params.id } });
         res.status(200);
