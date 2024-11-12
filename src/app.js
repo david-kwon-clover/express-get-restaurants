@@ -16,6 +16,18 @@ app.get("/restaurants", async (req, res, next) => {
     }
 })
 
+app.get("/restaurants/:id", async (req, res, next) => {
+    try {
+        const restaurant = await Restaurant.findByPk(req.params.id);
+        if(!restaurant) {
+            throw new Error("No restaurant found.");
+        }
+        res.json(restaurant);
+    } catch(error) {
+        next(error);
+    }
+})
+
 
 
 module.exports = app;
