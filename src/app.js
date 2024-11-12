@@ -43,6 +43,18 @@ app.post("/restaurants", async (req, res, next) => {
     }
 })
 
+app.put("/restaurants/:id", async (req, res, next) => {
+    try {
+        await Restaurant.update(req.body, { where: { id: req.params.id } });
+        res.status(201);
+        res.json({
+            "Updated": req.body
+        })
+    } catch(error) {
+        next(error);
+    }
+})
+
 
 
 module.exports = app;
