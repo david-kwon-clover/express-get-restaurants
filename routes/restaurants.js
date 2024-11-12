@@ -1,12 +1,20 @@
 const express = require("express");
-const Restaurant = require("../models/index")
+const { Restaurant, Menu, Item } = require("../models/index")
 const db = require("../db/connection");
 
 const restaurantsRouter = express.Router();
 
 restaurantsRouter.get("/", async (req, res, next) => {
     try {
-        const restaurants = await Restaurant.findAll();
+        const restaurants = await Restaurant.findAll({ 
+            include: Menu,
+            include: [{
+                model: Menu,
+                include: [{
+                    model: Item
+                }]
+            }] 
+        });
         if(!restaurants) {
             throw new Error("No restaurants found.");
         }
