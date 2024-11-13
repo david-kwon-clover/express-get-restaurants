@@ -41,6 +41,7 @@ restaurantsRouter.post("/", [
     check("name").trim().notEmpty().withMessage("name cannot be empty"),
     check("location").trim().notEmpty().withMessage("location cannot be empty"),
     check("cuisine").trim().notEmpty().withMessage("cuisine cannot be empty"),
+    check("name").isLength({ min: 10, max: 30 }).withMessage("name must be within 10-30 characters long")
 ], 
 async (req, res, next) => {
     const errors = validationResult(req);
