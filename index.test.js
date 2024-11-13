@@ -63,7 +63,7 @@ describe("GET /restaurants", () => {
 
   it("POST /restaurants should return restaurants array updated with new value", async () => {
     const response = await request(app).post("/restaurants").send({
-      name: "Chipotle",
+      name: "Chipotleee",
       location: "Denver",
       cuisine: "Mexican",
     });
@@ -71,14 +71,14 @@ describe("GET /restaurants", () => {
     expect(response.body).toHaveLength(4);
     expect(response.body[response.body.length - 1]).toEqual(
       expect.objectContaining({
-        name: "Chipotle",
+        name: "Chipotleee",
         location: "Denver",
         cuisine: "Mexican",
       })
     );
   });
 
-  it("POST /restaurants should throw errors if body contains invalid data", async () => {
+  it("POST /restaurants should throw errors if body contains empty fields", async () => {
     const response = await request(app).post("/restaurants").send({
       name: "Chipotle",
       location: "",
@@ -99,9 +99,24 @@ describe("GET /restaurants", () => {
     expect(response3.body.error[0].msg).toBe("cuisine cannot be empty");
   });
 
+  it("POST /restaurants should throw errors if name field is not within 10-30 characters", async () => {
+    const response = await request(app).post("/restaurants").send({
+      name: "Chip",
+      location: "Denver",
+      cuisine: "Mexican",
+    });
+    const response2 = await request(app).post("/restaurants").send({
+      name: "Chipotleyeahwoahportionsarequitesmallnowadays",
+      location: "Denver",
+      cuisine: "Mexican",
+    });
+    expect(response.body.error[0].msg).toBe("name must be within 10-30 characters long");
+    expect(response2.body.error[0].msg).toBe("name must be within 10-30 characters long");
+  });
+
   it("PUT /restaurants/:id should return return restaurants array updated with new value", async () => {
     const response = await request(app).post("/restaurants").send({
-      name: "Chipotle",
+      name: "Chipotleee",
       location: "Denver",
       cuisine: "Mexican",
     });
