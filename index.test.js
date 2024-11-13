@@ -1,16 +1,22 @@
-const { execSync } = require('child_process');
-execSync('npm install');
+const { execSync } = require("child_process");
+execSync("npm install");
 const request = require("supertest");
 const app = require("./src/app.js");
 const db = require("./db/connection.js");
-const { describe, it, expect, beforeAll, beforeEach, afterEach } = require("@jest/globals");
+const {
+  describe,
+  it,
+  expect,
+  beforeAll,
+  beforeEach,
+  afterEach,
+} = require("@jest/globals");
 
 describe("GET /restaurants", () => {
-    beforeEach(() => {
-        execSync('npm run seed');
-    })
+  beforeEach(() => {
+    execSync("npm run seed");
+  });
 
-    
   it("GET /restaurants should return a status code of 200", async () => {
     const response = await request(app).get("/restaurants");
     expect(response.statusCode).toBe(200);
@@ -55,47 +61,70 @@ describe("GET /restaurants", () => {
     );
   });
 
-  it("POST /restaurants should return return restaurants array updated with new value", async () => {
+  it("POST /restaurants should return restaurants array updated with new value", async () => {
     const response = await request(app).post("/restaurants").send({
-        name: "Chipotle",
-        location: "Denver",
-        cuisine: "Mexican"
+      name: "Chipotle",
+      location: "Denver",
+      cuisine: "Mexican",
     });
-    expect(response.body["Created"]).toEqual(
+    expect(response.body).toBeInstanceOf(Array);
+    expect(response.body).toHaveLength(4);
+    expect(response.body[response.body.length - 1]).toEqual(
       expect.objectContaining({
         name: "Chipotle",
         location: "Denver",
-        cuisine: "Mexican"
+        cuisine: "Mexican",
       })
     );
-    const restaurants = await request(app).get("/restaurants");
-    expect(restaurants.body).toHaveLength(4);
+  });
+
+  it("POST /restaurants should throw errors if body contains invalid data", async () => {
+    const response = await request(app).post("/restaurants").send({
+      name: "Chipotle",
+      location: "",
+      cuisine: "Mexican",
+    });
+    const response2 = await request(app).post("/restaurants").send({
+      name: "",
+      location: "Denver",
+      cuisine: "Mexican",
+    });
+    const response3 = await request(app).post("/restaurants").send({
+      name: "Chipotle",
+      location: "Denver",
+      cuisine: "",
+    });
+    expect(response.body.error[0].msg).toBe("location cannot be empty");
+    expect(response2.body.error[0].msg).toBe("name cannot be empty");
+    expect(response3.body.error[0].msg).toBe("cuisine cannot be empty");
   });
 
   it("PUT /restaurants/:id should return return restaurants array updated with new value", async () => {
     const response = await request(app).post("/restaurants").send({
-        name: "Chipotle",
-        location: "Denver",
-        cuisine: "Mexican"
+      name: "Chipotle",
+      location: "Denver",
+      cuisine: "Mexican",
     });
     await request(app).put("/restaurants/4").send({
-        name: "Texas Roadhouse",
-        location: "Dallas",
-        cuisine: "Steak"
+      name: "Texas Roadhouse",
+      location: "Dallas",
+      cuisine: "Steak",
     });
     const restaurants = await request(app).get("/restaurants");
-    expect(restaurants.body[3]).toEqual(expect.objectContaining({
+    expect(restaurants.body[3]).toEqual(
+      expect.objectContaining({
         name: "Texas Roadhouse",
         location: "Dallas",
-        cuisine: "Steak"
-    }))
+        cuisine: "Steak",
+      })
+    );
   });
 
   it("DELETE /restaurants/:id should delete restaurant by id", async () => {
     await request(app).post("/restaurants").send({
-        name: "Chipotle",
-        location: "Denver",
-        cuisine: "Mexican"
+      name: "Chipotle",
+      location: "Denver",
+      cuisine: "Mexican",
     });
     await request(app).delete("/restaurants/4");
     const restaurants = await request(app).get("/restaurants");
