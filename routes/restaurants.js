@@ -46,9 +46,11 @@ async (req, res, next) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()) {
         res.json({error: errors.array()});
+    } else {
+        await Restaurant.create(req.body);
+        const allRestaurants = await Restaurant.findAll();
+        res.json(allRestaurants);
     }
-    await Restaurant.create(req.body);
-    res.json(await Restaurant.findAll());
 })
 
 restaurantsRouter.put("/:id", async (req, res, next) => {
